@@ -5,7 +5,7 @@ using UnityEngine;
 public class MeshManager : MonoBehaviour
 {
     public MeshFilter MainMesh;
-    private MeshData Tree;
+    private MeshData MData;
 
     List<Vector3> DebugFrom = new List<Vector3>();
     List<Vector3> DebugTo = new List<Vector3>();
@@ -13,7 +13,15 @@ public class MeshManager : MonoBehaviour
 
     public void Start()
     {
-        Tree = new MeshData(MainMesh.mesh);
+        MData = new MeshData(MainMesh.mesh);
+    }
+
+    public void LateUpdate()
+    {
+        if (MData.UpdateMeshNeeded)
+        {
+            MData.UpdateMesh();
+        }
     }
 
     public void RaycastQuery(Ray pRay)
@@ -26,12 +34,13 @@ public class MeshManager : MonoBehaviour
 
         Triangle hit = new Triangle();
         Vector3 point = Vector3.zero;
-        bool result = Tree.Raycast(pRay, ref hit, ref point);
+        bool result = MData.Raycast(pRay, ref hit, ref point);
 
         if (result)
         {
             Debug.Log("HIT " + hit.Index + " " + point);
             DebugPoints.Add(point);
+            MData.AddVertex(point, hit);
         }
         else
             Debug.Log("MISS :-(");
@@ -52,7 +61,7 @@ public class MeshManager : MonoBehaviour
         foreach (var point in DebugPoints)
         {
             Gizmos.color = Color.green;
-            Gizmos.DrawSphere(point, 0.1f);
+            Gizmos.DrawSphere(point, 0.01f);
         }
     }
 }

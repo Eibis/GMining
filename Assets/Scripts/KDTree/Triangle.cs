@@ -9,20 +9,13 @@ public class Vertex
 
     public Vector3 Position;
 
+    public List<Triangle> Triangles = new List<Triangle>();
+
     public Vertex(int pIndex, Vector3 pPosition)
     {
         Index = pIndex;
         Position = pPosition;
     }
-}
-
-public class Edge
-{
-    public int V0;
-    public int V1;
-
-    public Triangle T0;
-    public Triangle T1;
 }
 
 public class Triangle
@@ -32,10 +25,6 @@ public class Triangle
     public Vertex V0;
     public Vertex V1;
     public Vertex V2;
-
-    public Edge E0;
-    public Edge E1;
-    public Edge E2;
 
     public Bounds Box;
 

@@ -68,4 +68,45 @@ public class KDNode
 
         return false;
     }
+
+    internal void RemoveTriangle(Triangle pTriangle, Vector3 pTriangleMidPoint)
+    {
+        if (Box.Contains(pTriangleMidPoint))
+        {
+            int index = Triangles.IndexOf(pTriangle);
+            if (index >= 0)
+            {
+                Triangles.RemoveAt(index);
+
+                if(Triangles.Count > 0)
+                { 
+                    Box = new Bounds(Triangles[0].Box.center, Triangles[0].Box.size);
+
+                    for (int i = 1; i < Triangles.Count; ++i)
+                    {
+                        Box.Encapsulate(Triangles[i].Box);
+                    }
+                }
+            }
+
+            if (Left.Triangles.Count > 0 || Right.Triangles.Count > 0)
+            {
+                if (Left.Triangles.Count > 0)
+                    Left.RemoveTriangle(pTriangle, pTriangleMidPoint);
+
+                if (Right.Triangles.Count > 0)
+                    Right.RemoveTriangle(pTriangle, pTriangleMidPoint);
+            }
+
+            if (Left.Triangles.Count == 0 && Right.Triangles.Count == 0)
+            {
+                InitEmptyLeaf();
+            }
+        }
+    }
+
+    internal void AddTriangle(Triangle pTriangle)
+    {
+        throw new NotImplementedException();
+    }
 }
