@@ -5,7 +5,7 @@ using UnityEngine;
 public class MeshManager : MonoBehaviour
 {
     public MeshFilter MainMesh;
-    private KDTree Tree;
+    private MeshData Tree;
 
     List<Vector3> DebugFrom = new List<Vector3>();
     List<Vector3> DebugTo = new List<Vector3>();
@@ -13,7 +13,7 @@ public class MeshManager : MonoBehaviour
 
     public void Start()
     {
-        Tree = new KDTree(MainMesh.mesh);
+        Tree = new MeshData(MainMesh.mesh);
     }
 
     public void RaycastQuery(Ray pRay)

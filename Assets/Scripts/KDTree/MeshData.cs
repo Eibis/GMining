@@ -3,15 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class KDTree
+public class MeshData
 {
     public int MaxDepth = 50;
     public float SplitCost = 0.5f;
 
     public KDNode Root;
     public List<Triangle> Triangles = new List<Triangle>();
+    //TODO list of duplicate points
+    //TODO dictionary of edges per point
+    public Dictionary<int, Vertex> Vertices = new Dictionary<int, Vertex>();
 
-    public KDTree(Mesh pMesh)
+    public MeshData(Mesh pMesh)
     {
         GenerateTriangleList(pMesh);
         Root = Build(Triangles, 0, Axis.NO_AXIS);
@@ -25,18 +28,36 @@ public class KDTree
 
             t.Index = i;
 
-            t.V0 = pMesh.triangles[t.Index + 0];
-            t.V1 = pMesh.triangles[t.Index + 1];
-            t.V2 = pMesh.triangles[t.Index + 2];
+            int v_index = pMesh.triangles[t.Index + 0];
+            if (!Vertices.ContainsKey(v_index))
+            {
+                Vertices.Add(v_index, new Vertex(v_index, pMesh.vertices[v_index]));
+            }
 
-            t.P0 = pMesh.vertices[t.V0];
-            t.P1 = pMesh.vertices[t.V1];
-            t.P2 = pMesh.vertices[t.V2];
+            t.V0 = Vertices[v_index];
+
+            v_index = pMesh.triangles[t.Index + 1];
+            if (!Vertices.ContainsKey(v_index))
+            {
+                Vertices.Add(v_index, new Vertex(v_index, pMesh.vertices[v_index]));
+            }
+
+            t.V1 = Vertices[v_index];
+
+            v_index = pMesh.triangles[t.Index + 2];
+            if (!Vertices.ContainsKey(v_index))
+            {
+                Vertices.Add(v_index, new Vertex(v_index, pMesh.vertices[v_index]));
+            }
+
+            t.V2 = Vertices[v_index];
 
             t.Box = new Bounds(t.GetMidPoint(), Vector3.zero);
-            t.Box.Encapsulate(t.P0);
-            t.Box.Encapsulate(t.P1);
-            t.Box.Encapsulate(t.P2);
+            t.Box.Encapsulate(t.V0.Position);
+            t.Box.Encapsulate(t.V1.Position);
+            t.Box.Encapsulate(t.V2.Position);
+            
+            //TODO calc edges
 
             Triangles.Add(t);
         }

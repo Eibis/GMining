@@ -3,31 +3,53 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public class Vertex
+{
+    public int Index;
+
+    public Vector3 Position;
+
+    public Vertex(int pIndex, Vector3 pPosition)
+    {
+        Index = pIndex;
+        Position = pPosition;
+    }
+}
+
+public class Edge
+{
+    public int V0;
+    public int V1;
+
+    public Triangle T0;
+    public Triangle T1;
+}
+
 public class Triangle
 {
     public int Index;
 
-    public int V0;
-    public int V1;
-    public int V2;
+    public Vertex V0;
+    public Vertex V1;
+    public Vertex V2;
 
-    public Vector3 P0;
-    public Vector3 P1;
-    public Vector3 P2;
+    public Edge E0;
+    public Edge E1;
+    public Edge E2;
 
     public Bounds Box;
 
     internal Vector3 GetMidPoint()
     {
-        return (P0 + P1 + P2) / 3.0f;
+        return (V0.Position + V1.Position + V2.Position) / 3.0f;
     }
 
     internal bool IntersectRay(Ray pRay, ref Vector3 pPoint)
     {
         /*triangle vectors*/
         Vector3 v, u;
-        u = P1 - P0;
-        v = P2 - P0;
+        u = V1.Position - V0.Position;
+        v = V2.Position - V0.Position;
 
         Vector3 n = Vector3.Cross(u, v);
 
@@ -35,7 +57,7 @@ public class Triangle
         if (n.magnitude == 0)
             return false;
 
-        Vector3 w0 = pRay.origin - P0;
+        Vector3 w0 = pRay.origin - V0.Position;
 
         float a = -Vector3.Dot(n, w0);
 
@@ -69,14 +91,14 @@ public class Triangle
     private bool CheckPointInTriangle(Vector3 pI)
     {
         Vector3 v, u;
-        u = P1 - P0;
-        v = P2 - P0;
+        u = V1.Position - V0.Position;
+        v = V2.Position - V0.Position;
 
         float uu = Vector3.Dot(u, u);
         float uv = Vector3.Dot(u, v);
         float vv = Vector3.Dot(v, v);
 
-        Vector3 w = pI - P0;
+        Vector3 w = pI - V0.Position;
 
         float wu = Vector3.Dot(w, u);
         float wv = Vector3.Dot(w, v);
